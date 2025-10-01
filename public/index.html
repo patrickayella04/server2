@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background-color: #0f172a;
+        color: #f8fafc;
+        display: flex;
+        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+
+      .card {
+        background: rgba(15, 23, 42, 0.75);
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        border-radius: 1rem;
+        padding: 2rem;
+        max-width: 480px;
+        width: 100%;
+        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.45);
+      }
+
+      h1 {
+        font-size: 1.75rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        letter-spacing: 0.02em;
+      }
+
+      form {
+        display: flex;
+        gap: 0.75rem;
+        flex-direction: column;
+      }
+
+      label {
+        font-weight: 600;
+        color: #cbd5f5;
+        font-size: 0.95rem;
+      }
+
+      input[type="url"] {
+        padding: 0.85rem 1rem;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(15, 23, 42, 0.65);
+        color: inherit;
+        font-size: 1rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      input[type="url"]:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+      }
+
+      button {
+        margin-top: 0.5rem;
+        padding: 0.85rem 1rem;
+        border-radius: 0.75rem;
+        border: none;
+        font-size: 1rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #f8fafc;
+        cursor: pointer;
+        transition: filter 0.2s ease, transform 0.2s ease;
+      }
+
+      button:hover {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+      }
+
+      .result,
+      .error {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      .result {
+        background: rgba(34, 197, 94, 0.15);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #bbf7d0;
+      }
+
+      .error {
+        background: rgba(248, 113, 113, 0.15);
+        border: 1px solid rgba(248, 113, 113, 0.3);
+        color: #fecaca;
+      }
+
+      .result a {
+        color: #c4b5fd;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .result a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>URL Shortener</h1>
+      <form id="shorten-form">
+        <label for="original-url">Paste a URL to shorten</label>
+        <input
+          id="original-url"
+          name="originalUrl"
+          type="url"
+          placeholder="https://example.com/very/long/link"
+          required
+        />
+        <button type="submit">Shorten Link</button>
+      </form>
+
+      <div id="feedback"></div>
+    </div>
+
+    <script>
+      const form = document.getElementById("shorten-form");
+      const feedback = document.getElementById("feedback");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        feedback.textContent = "";
+        feedback.className = "";
+
+        const originalUrl = form.originalUrl.value.trim();
+        if (!originalUrl) {
+          feedback.textContent = "Please enter a URL";
+          feedback.className = "error";
+          return;
+        }
+
+        try {
+          const response = await fetch("/url/shorten", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ originalUrl }),
+          });
+
+          const payload = await response.json();
+
+          if (!response.ok) {
+            feedback.textContent = payload.error || "Failed to shorten URL";
+            feedback.className = "error";
+            return;
+          }
+
+          feedback.innerHTML = `
+            <strong>${payload.message}</strong><br />
+            <span>Short link:</span>
+            <a href="${payload.shortUrl}" target="_blank" rel="noopener noreferrer">
+              ${payload.shortUrl}
+            </a>
+          `;
+          feedback.className = "result";
+          form.reset();
+        } catch (error) {
+          feedback.textContent = "Something went wrong. Please try again.";
+          feedback.className = "error";
+          console.error("Shorten error", error);
+        }
+      });
+    </script>
+  </body>
+</html>
