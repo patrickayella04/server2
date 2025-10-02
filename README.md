@@ -32,35 +32,44 @@ Nodemon for dev autoreload
 
 ⚡ Getting Started
 
-1. Clone the repo
-   git clone https://github.com/patrickayella04/server2.git
-   cd server2
+Clone the repo:
 
-2. Install dependencies
-   npm install
+git clone https://github.com/patrickayella04/server2.git
+cd server2
 
-3. Development mode (watch + autoreload)
-   npm run dev
+Install dependencies:
 
-Runs tsc in watch mode and restarts Node automatically.
+npm install
 
-4. Build for production
-   npm run build
+Run in development mode (autoreload):
 
-Compiles TypeScript to dist/.
+npm run dev
 
-5. Start compiled app
-   npm start
+: Runs tsc in watch mode and restarts Node automatically.
 
-Runs node dist/bin/www.js.
+Build for production:
 
-6. Run tests
-   npm test
+npm run build
 
-Optional: watch mode for tests
+: Compiles TypeScript into dist/.
+
+Start compiled app:
+
+npm start
+
+: Runs node dist/bin/www.js.
+
+Run tests:
+
+npm test
+
+: Executes unit tests.
+
+Optional – watch tests:
 
 npm run test:watch
 
+: Re-runs tests automatically when files change.
 ⚙️ Environment Variables
 
 Create a .env file (optional). Example:
